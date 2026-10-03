@@ -106,7 +106,7 @@ out[j] = in[base+m] ^ in[base+m+32] ^ in[base+64+m] ^ in[base+64+m+32]
          其中 base = (j / 32) * 128,  m = j mod 32,  j = 0..63
 ```
 
-### 2.3 为什么两次下移能正好抵消
+### 2.3 两次下移能正好抵消
 
 设四个元素 x0..x3 依次到来，m 表示它在半块内的位置（0..31）：
 
@@ -370,12 +370,6 @@ quartus_eda --simulation --tool=modelsim --format=vhdl ^
 
 再把 `postfit\` 下的网表与两套 SDF、`sim\tb_enc_axis_postfit.vhd`、
 `scripts\run_postfit_sim.do` 复制到 ASCII 目录执行该脚本（文件清单写在脚本开头）。
-
-### 6.5 重新生成设计报告
-
-```bat
-python RTL_V2\scripts\make_report.py
-```
 
 ---
 
