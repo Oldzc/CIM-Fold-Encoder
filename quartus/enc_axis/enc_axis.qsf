@@ -1,0 +1,60 @@
+# -------------------------------------------------------------------------- #
+#  enc_axis.qsf  --  AXI4-Stream top level (needs no measurement harness)
+#
+#  Top level is enc_axis itself: all AXI4-Stream signals are physical pins, so
+#  the area and Fmax measured here are the REAL system numbers, with nothing
+#  to subtract.
+#
+#  NOTE: comments in this file are deliberately ASCII-only.
+# -------------------------------------------------------------------------- #
+
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE10F17C8
+set_global_assignment -name TOP_LEVEL_ENTITY enc_axis
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "9.1 SP2"
+set_global_assignment -name LAST_QUARTUS_VERSION "9.1 SP2"
+
+# ---- source files -----------------------------------------------------------
+# This revision uses the write-and-fold core (no 4096-bit input array).
+# parallel_conv_encoder.vhd still exists for the enc_v2 revision and for the
+# equivalence testbench, but it is deliberately NOT part of this build.
+set_global_assignment -name VHDL_FILE ../../rtl/enc_fold.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/enc_axis.vhd
+
+# ---- timing constraints (150 MHz) -------------------------------------------
+set_global_assignment -name SDC_FILE ../../constraints/constraints_axis.sdc
+
+# ---- pins: only clock and reset are pinned; the fitter places the AXI I/O ---
+set_location_assignment PIN_M2 -to aclk
+set_location_assignment PIN_M1 -to aresetn
+
+# ---- force the AXI outputs into the I/O cell registers ----------------------
+# Without this the fitter leaves s_ready_r / m_valid_r / m_last_r / m_data_r in
+# the fabric, and a bare flip-flop to pin costs 4.1 ns of routing, i.e. -2.2 ns
+# of setup slack at 150 MHz.  Packing them into the IOE makes it ~1 ns.
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_axis_tready
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to m_axis_tvalid
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to m_axis_tlast
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to m_axis_tdata
+
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+
+# ---- PowerPlay power analysis ----------------------------------------------
+set_global_assignment -name POWER_DEFAULT_TOGGLE_RATE "50%"
+
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim (VHDL)"
+set_global_assignment -name EDA_NETLIST_WRITER_OUTPUT_DIR postfit -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
+
+# ---- ?????? VCD ????????? ------------------------------------
+
+
+
+# ---- ??????????, ?????? --------------------------------------
+# enc_axis ???????????: 6 ???? 3 ?? 150 MHz (144~156 MHz)?
+# ?????????????, ?? quartus_fit enc_axis ?????
+# ????? docs/fit_seed_sensitivity.txt
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name SEED 6

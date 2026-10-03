@@ -1,0 +1,42 @@
+# -------------------------------------------------------------------------- #
+#  sys_full.qsf  --  complete system: uart_rxd -> encoder -> uart_txd
+#
+#  uart_recv.vhd / uart_send.vhd are referenced from the ORIGINAL project folder
+#  with a relative path on purpose: they are used unmodified, and keeping a
+#  single copy avoids the two versions drifting apart.
+#
+#  NOTE: comments in this file are deliberately ASCII-only.
+# -------------------------------------------------------------------------- #
+
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE10F17C8
+set_global_assignment -name TOP_LEVEL_ENTITY sys_full
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "9.1 SP2"
+set_global_assignment -name LAST_QUARTUS_VERSION "9.1 SP2"
+
+# ---- source files -----------------------------------------------------------
+set_global_assignment -name VHDL_FILE ../../rtl/enc_fold.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/enc_axis.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/uart_to_axis.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/axis_to_uart.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/sys_full.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/provided/uart_recv.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/provided/uart_send.vhd
+
+# ---- timing constraints (150 MHz datapath) ----------------------------------
+set_global_assignment -name SDC_FILE ../../constraints/constraints_full.sdc
+
+# ---- pins -------------------------------------------------------------------
+set_location_assignment PIN_M2 -to sys_clk
+set_location_assignment PIN_M1 -to sys_rst_n
+set_location_assignment PIN_N5 -to uart_rxd
+set_location_assignment PIN_M7 -to uart_txd
+
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+
+# ---- PowerPlay power analysis ----------------------------------------------
+set_global_assignment -name POWER_DEFAULT_TOGGLE_RATE "50%"
+
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"

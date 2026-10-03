@@ -1,0 +1,67 @@
+# -------------------------------------------------------------------------- #
+#  enc_v2.qsf  --  In-memory-computing encoder V2  (4096 -> 1024, 4:1 compress)
+#
+#  Differences from the original project "testfinal":
+#    * top level is enc_top  (wide buses kept on-chip, only 3 physical pins)
+#    * constraints.sdc added, declaring the real 150 MHz target
+#    * the stale absolute path MISC_FILE pointing at the original author's
+#      desktop has been removed
+#
+#  NOTE: comments in this file are deliberately ASCII-only.  Mixing encodings
+#        inside a .qsf makes Quartus refuse to open the project.
+# -------------------------------------------------------------------------- #
+
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE10F17C8
+set_global_assignment -name TOP_LEVEL_ENTITY enc_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "9.1 SP2"
+set_global_assignment -name LAST_QUARTUS_VERSION "9.1 SP2"
+
+# ---- source files -----------------------------------------------------------
+set_global_assignment -name VHDL_FILE ../../rtl/parallel_conv_encoder.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/enc_top.vhd
+
+# ---- timing constraints (150 MHz) -------------------------------------------
+set_global_assignment -name SDC_FILE ../../constraints/constraints.sdc
+
+# ---- pins -------------------------------------------------------------------
+set_location_assignment PIN_M2 -to clk
+set_location_assignment PIN_M1 -to rst_n
+set_location_assignment PIN_M7 -to ovalid
+
+# ---- keep the 1024-bit data_out as a virtual pin ----------------------------
+# A virtual pin occupies no physical pin but prevents Quartus from optimizing
+# away logic that nothing observes, so the measured area/Fmax cover the whole
+# datapath.
+set_instance_assignment -name VIRTUAL_PIN ON -to data_out
+
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+
+# ---- added by Quartus itself during compilation -----------------------------
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
+
+# ---- PowerPlay power analysis ----------------------------------------------
+# The data path flips with ~50% probability per clock on random data, whereas
+# Quartus defaults to 12.5%.  See README: this assignment on its own barely
+# moves the reported number, because vectorless estimation overrides it for
+# every node unless simulation activity is supplied.
+set_global_assignment -name POWER_DEFAULT_TOGGLE_RATE 50%
+
+# To raise the confidence from "Low" to "High", attach the simulation activity
+# recorded in dump.vcd:
+#     Assignments -> Settings -> PowerPlay Power Analyzer Settings
+#     -> "Use input file" -> browse to dump.vcd
+# is not the obvious one, and hand-written forms are rejected by Quartus 9.1.
+
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+
+
+# ---- ? ModelSim ?????? (VCD) ????????? ----
+
+# ---- ? ModelSim ?????? (VCD) ????????? ----
+# ?????? "Use Input Files: Off", ?????? 0?

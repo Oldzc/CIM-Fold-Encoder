@@ -1,0 +1,72 @@
+# ==============================================================================
+#  .gitignore —— 只提交源码与文档，排除工具产生的编译/仿真产物
+#
+#  这些文件全部可以由源码重新生成（见 README 第六节）。
+#  加上这份规则后，仓库从约 90 MB 降到约 400 KB。
+# ==============================================================================
+
+# ---------- Quartus II：综合/布局/装配产物 ----------
+db/
+incremental_db/
+*.ddb
+*.cdb
+*.hdb
+*.tdb
+*.rdb
+*.rcfdb
+*.hsd
+*.kpt
+*.qmsg
+*.smsg
+*.rpt
+*.summary
+*.pin
+*.sof
+*.pof
+*.qws
+*.qpg
+*.qtl
+*.qdb
+*.logdb
+*.hif
+*.dpi
+*.dfp
+*.dpf
+*.sci
+*.ecobp
+*.bpm
+*.cbp
+*.db_info
+*.hier_info
+*.syn_hier_info
+*.done
+*.bak
+*.sld
+*.jdi
+*.ipg
+
+# ---------- 门级仿真网表与 SDF（可由 quartus_eda 重新生成，约 9 MB） ----------
+*.vho
+*.sdo
+*.xrf
+
+# ---------- ModelSim ----------
+work/
+*.wlf
+transcript
+*.mpf
+*.mti
+
+# ---------- 本地仿真记录与重构前的历史报告 ----------
+docs/logs/
+docs/old_reports/
+
+# ---------- 操作系统 / 编辑器 ----------
+Thumbs.db
+Desktop.ini
+desktop.ini
+.DS_Store
+*.swp
+*~
+.vscode/
+.idea/
