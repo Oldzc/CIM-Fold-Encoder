@@ -4,7 +4,7 @@
 > single compute-in-memory cell, folded at the storage unit's write port.
 > VHDL · Altera Cyclone IV E · AXI4-Stream · 150 MHz
 
-按《需求.txt》实现的 **4:1 压缩编码器**：256 个 16 bit 元素（4096 bit）分成
+**4:1 压缩编码器**：256 个 16 bit 元素（4096 bit）分成
 4 个子块，在存储单元内就地折叠，输出 64 个 16 bit 元素（1024 bit）。
 编码器数据通路运行在 150 MHz，输出接口为 AXI4-Stream。
 
